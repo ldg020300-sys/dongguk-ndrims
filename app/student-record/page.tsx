@@ -18,6 +18,11 @@ const rows = [
 export default function StudentRecordPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
+
+  const residentialAddress =
+    profile?.student_id === "2026111767"
+      ? "서울특별시 중랑구 중랑역로 124 1401호(중화동, 삼익아파트)"
+      : "경기 고양시 일산동구 동국로 52-7 그린빌 205호";
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -66,7 +71,7 @@ export default function StudentRecordPage() {
           <div className="record-label">전화번호</div><div className="record-value">-</div>
           <div className="record-label">핸드폰</div><div className="record-value">010-8910-6356</div>
           <div className="record-label">Email</div><div className="record-value">ldg0610@naver.com</div>
-          <div className="record-label">거주지주소</div><div className="record-value span-7">서울특별시 중랑구 중랑역로 124 1401호(중화동, 삼익아파트)</div>
+          <div className="record-label">거주지주소</div><div className="record-value span-7">{residentialAddress}</div>
           <div className="record-label">예금주명</div><div className="record-value">임동균</div>
           <div className="record-label">은행명</div><div className="record-value">토스뱅크</div>
           <div className="record-label">계좌번호</div><div className="record-value span-3">100091146325</div>
