@@ -41,11 +41,12 @@ export default function LoginPage() {
       <div style={{ height: 88, display: "flex", alignItems: "center" }} className="container">
         <div style={{ display: "flex", alignItems: "center" }}>
           <img
-            src="/dongguk-logo.png"
+            src="/dongguk-logo-clean.png"
             alt="동국대학교"
             style={{
               display: "block",
-              width: "clamp(190px, 22vw, 285px)",
+              width: "clamp(205px, 18vw, 255px)",
+              maxHeight: 66,
               height: "auto",
               objectFit: "contain"
             }}
