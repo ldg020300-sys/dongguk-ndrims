@@ -22,16 +22,29 @@ const headers = ["No", "년도", "학기", "학수번호", "분반", "교과목�
 export default function GradesPage() {
   const router = useRouter();
   const [name, setName] = useState<string>();
+  const [studentId, setStudentId] = useState<string>();
   const [selected, setSelected] = useState(0);
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return router.replace("/");
-      const { data } = await supabase.from("profiles").select("name").eq("id", user.id).single();
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("name, student_id")
+        .eq("id", user.id)
+        .single();
+
       setName(data?.name);
+      setStudentId(data?.student_id);
     })();
   }, [router]);
+
+  const isSecondStudent = studentId === "2026111767";
+  const visibleRows = isSecondStudent ? [] : gradeRows;
+
+  const summaryValue = (value: string) => isSecondStudent ? "\u00A0" : value;
 
   return (
     <AcademicShell name={name}>
@@ -40,6 +53,7 @@ export default function GradesPage() {
         <div className="tab">평가항목별성적조회</div>
         <div className="tab active">전체성적조회</div>
       </div>
+
       <section className="grade-page">
         <div className="grade-breadcrumb">대표-학사행정 &gt; 성적 &gt; 전체성적조회</div>
         <h1>전체성적조회</h1>
@@ -51,17 +65,28 @@ export default function GradesPage() {
             <button>마지막 학기 성적표</button>
             <button className="muted">선택과목평점평균조회</button>
           </div>
-          <span className="grade-count">9건</span>
+          <span className="grade-count">{visibleRows.length}건</span>
         </div>
 
         <div className="grade-table-scroll">
           <table className="grade-table">
-            <thead><tr><th className="check-cell"><input type="checkbox" /></th>{headers.map(h => <th key={h}>{h}</th>)}</tr></thead>
+            <thead>
+              <tr>
+                <th className="check-cell"><input type="checkbox" /></th>
+                {headers.map((header) => <th key={header}>{header}</th>)}
+              </tr>
+            </thead>
             <tbody>
-              {gradeRows.map((row, index) => (
-                <tr key={index} className={selected === index ? "selected" : ""} onClick={() => setSelected(index)}>
-                  <td className="check-cell"><input type="checkbox" checked={selected === index} readOnly /></td>
-                  {row.map((cell, i) => <td key={i}>{cell}</td>)}
+              {visibleRows.map((row, index) => (
+                <tr
+                  key={index}
+                  className={selected === index ? "selected" : ""}
+                  onClick={() => setSelected(index)}
+                >
+                  <td className="check-cell">
+                    <input type="checkbox" checked={selected === index} readOnly />
+                  </td>
+                  {row.map((cell, cellIndex) => <td key={cellIndex}>{cell}</td>)}
                 </tr>
               ))}
             </tbody>
@@ -71,25 +96,26 @@ export default function GradesPage() {
         <div className="grade-detail-title">성적상세 <span>−</span></div>
         <div className="grade-summary">
           <div className="summary-row">
-            <b>2026년도 / 1</b>
-            <span>신청과목수</span><strong>9</strong>
-            <span>신청학점</span><strong>18</strong>
-            <span>취득학점</span><strong>18</strong>
-            <span>평점계</span><strong>40.5</strong>
-            <span>평점평균</span><strong>4.5</strong>
-            <span>증명서평점</span><strong>4.5</strong>
-            <span>학과학년석차</span><strong>1/35</strong>
+            <b>{summaryValue("2026년도 / 1")}</b>
+            <span>신청과목수</span><strong>{summaryValue("9")}</strong>
+            <span>신청학점</span><strong>{summaryValue("18")}</strong>
+            <span>취득학점</span><strong>{summaryValue("18")}</strong>
+            <span>평점계</span><strong>{summaryValue("40.5")}</strong>
+            <span>평점평균</span><strong>{summaryValue("4.5")}</strong>
+            <span>증명서평점</span><strong>{summaryValue("4.5")}</strong>
+            <span>학과학년석차</span><strong>{summaryValue("1/35")}</strong>
           </div>
+
           <div className="summary-row">
-            <b>전체</b>
-            <span>총신청과목수</span><strong>9</strong>
-            <span>총신청학점</span><strong>18</strong>
-            <span>총취득학점</span><strong>18</strong>
-            <span>총평점계</span><strong>40.5</strong>
-            <span>총평점평균</span><strong>4.5</strong>
-            <span>총증명서평점</span><strong>4.5</strong>
-            <span>졸업석차백분율</span><strong>2.9</strong>
-            <span>석차</span><strong>1/35</strong>
+            <b>{summaryValue("전체")}</b>
+            <span>총신청과목수</span><strong>{summaryValue("9")}</strong>
+            <span>총신청학점</span><strong>{summaryValue("18")}</strong>
+            <span>총취득학점</span><strong>{summaryValue("18")}</strong>
+            <span>총평점계</span><strong>{summaryValue("40.5")}</strong>
+            <span>총평점평균</span><strong>{summaryValue("4.5")}</strong>
+            <span>총증명서평점</span><strong>{summaryValue("4.5")}</strong>
+            <span>졸업석차백분율</span><strong>{summaryValue("2.9")}</strong>
+            <span>석차</span><strong>{summaryValue("1/35")}</strong>
           </div>
         </div>
       </section>
