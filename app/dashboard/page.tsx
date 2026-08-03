@@ -1,79 +1,86 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import PortalHeader from "@/components/PortalHeader";
+import AcademicShell from "@/components/AcademicShell";
 import { supabase } from "@/lib/supabase";
-import Link from "next/link";
+import { Search } from "lucide-react";
 
 type Profile = { name: string; student_id: string; major: string; year: number; role: string };
-type Notice = { id: number; title: string; created_at: string };
+type Notice = { id: number; title: string; content: string; created_at: string };
 
 export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [notices, setNotices] = useState<Notice[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return router.replace("/");
-
-      const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-      setProfile(profile);
-
-      const { data: notices } = await supabase.from("notices").select("id,title,created_at").order("created_at", { ascending: false });
-      setNotices(notices ?? []);
+      const { data: profileData } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      setProfile(profileData);
+      const { data: noticeData } = await supabase.from("notices").select("*").order("created_at", { ascending: false });
+      const rows = noticeData ?? [];
+      setNotices(rows);
+      if (rows[0]) setSelectedId(rows[0].id);
     })();
   }, [router]);
 
-  const filtered = notices.filter(n => n.title.includes(keyword));
+  const filtered = useMemo(() => notices.filter((n) => n.title.toLowerCase().includes(keyword.toLowerCase())), [notices, keyword]);
+  const selected = notices.find((n) => n.id === selectedId) ?? filtered[0];
 
   return (
-    <>
-      <PortalHeader name={profile?.name} />
-      <main className="container" style={{ padding: "30px 0 60px" }}>
-        <h1 className="page-title">학사행정 메인</h1>
+    <AcademicShell name={profile?.name}>
+      <div className="workspace-tabs">
+        <div className="tab active">공지사항조회</div>
+      </div>
+      <section className="notice-workspace">
+        <div className="workspace-heading">공지사항조회</div>
+        <div className="notice-filters">
+          <label><span>시스템단위</span><select><option>- 전체 -</option></select></label>
+          <label><span>작성일자</span><input type="date" /><b>~</b><input type="date" /></label>
+          <label className="title-filter"><span>제목</span><input value={keyword} onChange={(e) => setKeyword(e.target.value)} /></label>
+          <button><Search size={17} /> 조회</button>
+        </div>
 
-        <section className="card" style={{ padding: 22, marginBottom: 24 }}>
-          <div className="panel-title">학생정보</div>
-          <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))" }}>
-            <div><b>이름</b><p>{profile?.name ?? "-"}</p></div>
-            <div><b>학번</b><p>{profile?.student_id ?? "-"}</p></div>
-            <div><b>학과</b><p>{profile?.major ?? "-"}</p></div>
-            <div><b>학년</b><p>{profile ? `${profile.year}학년` : "-"}</p></div>
-          </div>
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <Link href="/mypage" className="btn btn-secondary">마이페이지</Link>
-            {profile?.role === "admin" && <Link href="/admin" className="btn btn-primary">관리자 페이지</Link>}
-          </div>
-        </section>
-
-        <section className="card" style={{ padding: 22 }}>
-          <div className="panel-title">공지사항조회</div>
-          <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
-            <input className="input" value={keyword} onChange={e => setKeyword(e.target.value)} placeholder="제목 검색" />
-            <button className="btn btn-secondary">조회</button>
+        <div className="split-notice">
+          <div className="notice-list-panel">
+            <div className="section-bar"><span>공지사항목록</span><strong>{filtered.length}건</strong></div>
+            <div className="notice-grid-header"><span>No</span><span>제목</span><span>작성일</span></div>
+            <div className="notice-list-scroll">
+              {filtered.map((n, i) => (
+                <button key={n.id} className={`notice-row ${selected?.id === n.id ? "selected" : ""}`} onClick={() => setSelectedId(n.id)}>
+                  <span>{i + 1}</span><span>{n.title}</span><span>{new Date(n.created_at).toLocaleDateString("ko-KR")}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="table-wrap">
-            <table>
-              <thead><tr><th style={{ width: 80 }}>No</th><th>제목</th><th style={{ width: 140 }}>작성일</th></tr></thead>
-              <tbody>
-                {filtered.map((n, i) => (
-                  <tr key={n.id}>
-                    <td>{i + 1}</td>
-                    <td><Link href={`/notices/${n.id}`}>{n.title}</Link></td>
-                    <td>{new Date(n.created_at).toLocaleDateString("ko-KR")}</td>
-                  </tr>
-                ))}
-                {filtered.length === 0 && <tr><td colSpan={3}>등록된 공지사항이 없습니다.</td></tr>}
-              </tbody>
-            </table>
+          <div className="notice-detail-panel">
+            <div className="section-bar"><span>상세정보</span></div>
+            {selected ? (
+              <>
+                <div className="detail-meta-grid">
+                  <div className="meta-label">제목</div><div className="meta-value wide">{selected.title}</div>
+                  <div className="meta-label">작성자</div><div className="meta-value">교무팀</div>
+                  <div className="meta-label">작성일</div><div className="meta-value">{new Date(selected.created_at).toLocaleDateString("ko-KR")}</div>
+                  <div className="meta-label">조회수</div><div className="meta-value">2</div>
+                </div>
+                <article className="notice-detail-content">
+                  <h3>{selected.title}</h3>
+                  <p>{selected.content}</p>
+                  <p className="notice-emphasis">※ 본 화면은 학교 과제용으로 제작된 학사행정정보시스템입니다.</p>
+                  <p>자세한 사항은 담당 부서에 문의하시기 바랍니다.</p>
+                </article>
+                <div className="attachment-box"><b>첨부파일</b><span>조회된 자료가 없습니다.</span></div>
+              </>
+            ) : <div className="empty-detail">공지사항을 선택하세요.</div>}
           </div>
-        </section>
-      </main>
-    </>
+        </div>
+      </section>
+    </AcademicShell>
   );
 }
