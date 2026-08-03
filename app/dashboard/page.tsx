@@ -72,10 +72,12 @@ export default function DashboardPage() {
                 <article className="notice-detail-content">
                   <h3>{selected.title}</h3>
                   <p>{selected.content}</p>
-                  <p className="notice-emphasis">※ 본 화면은 학교 과제용으로 제작된 학사행정정보시스템입니다.</p>
                   <p>자세한 사항은 담당 부서에 문의하시기 바랍니다.</p>
                 </article>
                 <div className="attachment-box"><b>첨부파일</b><span>조회된 자료가 없습니다.</span></div>
+                <div className="notice-project-footer">
+                  본 화면은 학교 과제용으로 제작된 학사행정정보시스템입니다.
+                </div>
               </>
             ) : <div className="empty-detail">공지사항을 선택하세요.</div>}
           </div>
