@@ -39,7 +39,18 @@ export default function LoginPage() {
   return (
     <main style={{ minHeight: "100vh", background: "#fff" }}>
       <div style={{ height: 88, display: "flex", alignItems: "center" }} className="container">
-        <div style={{ fontWeight: 900, fontSize: 24, color: "#4f4a47" }}>동국대학교</div>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <img
+            src="/dongguk-logo.png"
+            alt="동국대학교"
+            style={{
+              display: "block",
+              width: "clamp(190px, 22vw, 285px)",
+              height: "auto",
+              objectFit: "contain"
+            }}
+          />
+        </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
           <Globe2 size={20} /> KR
         </div>
