@@ -23,9 +23,25 @@ const initialInquiry: Inquiry = {
   title: "행정시스템 오류",
   author: "임동균",
   date: "2026-08-03",
-  status: "답변대기",
+  status: "답변완료",
   content: `안녕하세요 본 학교 행정 시스템에서 오류가 있는 거 같아 문의 남깁니다. 저는 현재 약학대학에 재학중임에도 식품바이오융합공학과에도 동시에 재학중으로 나옵니다. 현재 학사행정시스템에도 두 학번 모두 로그인이 가능한 상태입니다. 저번 입학키트 수령 당시 두 학과 모두에게서 입학키트를 받았고 그 당시 전화로 제가 제 학사 시스템에 오류가 있는 거 같다고 말씀드렸었는데 아직 제대로 처리되지 않은 것 같습니다. 그래서 최근 또 다시 집으로 학사경고 우편이 도착했고 부모님께서 괜한 걱정을 하셨습니다. 하루빨리 수정 부탁드립니다.`,
-  answer: "",
+  answer: `안녕하세요. 동국대학교 학사행정팀입니다.
+
+문의해 주신 내용을 확인한 결과, 학사행정정보시스템 내 학생 정보가 중복 등록되어 동일인이 두 개의 학번으로 조회되는 오류가 확인되었습니다.
+
+확인 결과, 입학 당시 동일 학생이 이례적으로 본교에 중복 합격하는 과정에서 학사행정 처리상의 착오가 발생한 것으로 확인되었습니다.
+
+해당 오류로 인해 약학과와 식품바이오융합공학과의 학생 정보가 동시에 조회되었으며, 이로 인해 입학키트가 중복 지급되고 학사경고 안내문이 잘못 발송된 것으로 확인되었습니다.
+
+또한 입학키트 중복 수령 이후 학사행정팀으로 유선 문의를 주셨음에도 당시 즉시 원인을 파악하고 조치하지 못하여 동일한 문제가 지속된 점을 확인하였습니다. 이로 인해 추가적인 불편과 혼란을 드리게 된 점에 대해 진심으로 사과드립니다.
+
+현재 관련 부서에서 학생 정보를 정상적으로 정비하는 작업을 진행하고 있으며, 작업 완료 후에는 하나의 학적 정보만 정상적으로 조회되도록 조치할 예정입니다.
+
+잘못 발송된 안내문과 학사행정 처리 지연으로 인해 불편과 심려를 끼쳐드린 점 다시 한번 진심으로 사과드립니다.
+
+추가 문의사항이 있으시면 학사행정팀으로 연락하여 주시기 바랍니다.
+
+감사합니다.`,
 };
 
 const storageKey = "dongguk-academic-inquiries-2026110432";
@@ -287,10 +303,10 @@ export default function AcademicInquiryPage() {
               <>
                 <div style={{ display: "grid", gridTemplateColumns: "110px 1fr 110px 1fr", borderTop: "2px solid #333" }}>
                   <div style={labelStyle}>문의유형</div><div style={valueStyle}>{selected.category}</div>
-                  <div style={labelStyle}>처리상태</div><div style={{ ...valueStyle, color: "#d94724", fontWeight: 700 }}>{selected.status}</div>
+                  <div style={labelStyle}>처리상태</div><div style={{ ...valueStyle, color: "#d94724", fontWeight: 700 }}>답변완료</div>
                   <div style={labelStyle}>제목</div><div style={{ ...valueStyle, gridColumn: "span 3" }}>{selected.title}</div>
                   <div style={labelStyle}>작성자</div><div style={valueStyle}>{selected.author}</div>
-                  <div style={labelStyle}>작성일</div><div style={valueStyle}>{selected.date}</div>
+                  <div style={labelStyle}>작성일</div><div style={valueStyle}>{selected.date}</div><div style={labelStyle}>답변일시</div><div style={valueStyle}>2026-08-07 14:12</div><div style={labelStyle}>답변자</div><div style={valueStyle}>학사행정팀</div>
                   <div style={labelStyle}>문의내용</div>
                   <div style={{ ...valueStyle, gridColumn: "span 3", minHeight: 240, whiteSpace: "pre-wrap", lineHeight: 1.8 }}>
                     {selected.content}
@@ -300,7 +316,7 @@ export default function AcademicInquiryPage() {
                 <div style={{ margin: "18px 16px 0", borderTop: "2px solid #333" }}>
                   <div style={{ padding: "11px 12px", background: "#f1f2f3", fontWeight: 800 }}>답변</div>
                   <div style={{ minHeight: 120, border: "1px solid #ddd", padding: 18, color: selected.answer ? "#222" : "#999", whiteSpace: "pre-wrap" }}>
-                    {selected.answer || "등록된 답변이 없습니다."}
+                    {selected.answer}
                   </div>
                 </div>
               </>
