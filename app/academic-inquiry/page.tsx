@@ -75,27 +75,12 @@ export default function AcademicInquiryPage() {
       try {
         const parsed = JSON.parse(saved) as Inquiry[];
         if (Array.isArray(parsed) && parsed.length > 0) {
-          // 기존 브라우저에 저장된 문의는 유지하되,
-          // 최초 문의(id: 1)는 최신 답변완료 데이터로 갱신합니다.
-          const hasInitialInquiry = parsed.some((item) => item.id === initialInquiry.id);
-          const migrated = parsed.map((item) =>
-            item.id === initialInquiry.id ? initialInquiry : item
-          );
-          const nextInquiries = hasInitialInquiry
-            ? migrated
-            : [initialInquiry, ...migrated];
-
-          setInquiries(nextInquiries);
-          setSelectedId(nextInquiries[0].id);
-          localStorage.setItem(storageKey, JSON.stringify(nextInquiries));
+          setInquiries(parsed);
+          setSelectedId(parsed[0].id);
         }
       } catch {
         localStorage.removeItem(storageKey);
-        setInquiries([initialInquiry]);
-        setSelectedId(initialInquiry.id);
       }
-    } else {
-      localStorage.setItem(storageKey, JSON.stringify([initialInquiry]));
     }
   }, [router]);
 
