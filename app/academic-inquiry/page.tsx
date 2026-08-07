@@ -270,30 +270,51 @@ export default function AcademicInquiryPage() {
               ))}
             </div>
 
-            {filtered.map((item, index) => (
-              <button
-                type="button"
-                key={item.id}
-                onClick={() => setSelectedId(item.id)}
+            {filtered.length === 0 ? (
+              <div
                 style={{
-                  display: "grid",
-                  width: "100%",
-                  gridTemplateColumns: "52px 90px 1fr 105px 86px",
-                  border: 0,
+                  padding: "42px 12px",
+                  textAlign: "center",
+                  color: "#777",
                   borderBottom: "1px solid #e2e2e2",
-                  background: selected?.id === item.id ? "#fff8ba" : "#fff",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  font: "inherit",
                 }}
               >
-                <span style={cellCenter}>{index + 1}</span>
-                <span style={cellCenter}>{item.category}</span>
-                <span style={cellText}>{item.title}</span>
-                <span style={cellCenter}>{item.date}</span>
-                <span style={{ ...cellCenter, color: "#d94724", fontWeight: 700 }}>{item.status}</span>
-              </button>
-            ))}
+                등록된 문의가 없습니다.
+              </div>
+            ) : (
+              filtered.map((item, index) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  onClick={() => setSelectedId(item.id)}
+                  style={{
+                    display: "grid",
+                    width: "100%",
+                    gridTemplateColumns: "52px 90px 1fr 105px 86px",
+                    border: 0,
+                    borderBottom: "1px solid #e2e2e2",
+                    background: selected?.id === item.id ? "#fff8ba" : "#fff",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    font: "inherit",
+                  }}
+                >
+                  <span style={cellCenter}>{index + 1}</span>
+                  <span style={cellCenter}>{item.category}</span>
+                  <span style={cellText}>{item.title}</span>
+                  <span style={cellCenter}>{item.date}</span>
+                  <span
+                    style={{
+                      ...cellCenter,
+                      color: item.status === "답변완료" ? "#18864b" : "#d94724",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {item.status}
+                  </span>
+                </button>
+              ))
+            )}
           </div>
 
           <div>
@@ -303,7 +324,16 @@ export default function AcademicInquiryPage() {
               <>
                 <div style={{ display: "grid", gridTemplateColumns: "110px 1fr 110px 1fr", borderTop: "2px solid #333" }}>
                   <div style={labelStyle}>문의유형</div><div style={valueStyle}>{selected.category}</div>
-                  <div style={labelStyle}>처리상태</div><div style={{ ...valueStyle, color: "#d94724", fontWeight: 700 }}>답변완료</div>
+                  <div style={labelStyle}>처리상태</div>
+                  <div
+                    style={{
+                      ...valueStyle,
+                      color: selected.status === "답변완료" ? "#18864b" : "#d94724",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {selected.status}
+                  </div>
                   <div style={labelStyle}>제목</div><div style={{ ...valueStyle, gridColumn: "span 3" }}>{selected.title}</div>
                   <div style={labelStyle}>작성자</div><div style={valueStyle}>{selected.author}</div>
                   <div style={labelStyle}>작성일</div><div style={valueStyle}>{selected.date}</div><div style={labelStyle}>답변일시</div><div style={valueStyle}>2026-08-07 14:12</div><div style={labelStyle}>답변자</div><div style={valueStyle}>학사행정팀</div>
